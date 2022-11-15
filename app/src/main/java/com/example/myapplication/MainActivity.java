@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
     // General
     protected boolean shouldMoveForward = true;
+    protected TextView score_text_view;
+    protected int scoreCounter = 0;
 
     //Generating block's locations, array for blocks and Timers for each block
     protected int firstBlockLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
@@ -263,6 +266,10 @@ public class MainActivity extends AppCompatActivity {
         right_heart.setVisibility(View.VISIBLE);
         start_btn.setVisibility(View.INVISIBLE);
 
+        score_text_view = (TextView) findViewById(R.id.score_text_view);
+        scoreCounter = 0;
+        score_text_view.setText(String.valueOf(scoreCounter));
+
         startFirstBlockTimer();
         startSecondBlockTimer();
     }
@@ -277,6 +284,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (LEFT_LANE <= firstBlockLocation && firstBlockLocation <= RIGHT_LANE) {
             isGameOver();
+            scoreCounter += 100;
+            score_text_view.setText(String.valueOf(scoreCounter));
             blocksArray.get(firstBlockLocation).setVisibility(View.INVISIBLE);
             firstBlockLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
             blocksArray.get(firstBlockLocation).setVisibility(View.VISIBLE);
@@ -299,7 +308,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (LEFT_LANE <= secondBlockLocation && secondBlockLocation <= RIGHT_LANE) {
             isGameOver();
-
+            scoreCounter += 100;
+            score_text_view.setText(String.valueOf(scoreCounter));
             blocksArray.get(secondBlockLocation).setVisibility(View.INVISIBLE);
             secondBlockLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
             blocksArray.get(secondBlockLocation).setVisibility(View.VISIBLE);
@@ -371,10 +381,10 @@ public class MainActivity extends AppCompatActivity {
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         // Vibrate for 500 milliseconds
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+            v.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE));
         } else {
             //deprecated in API 26
-            v.vibrate(500);
+            v.vibrate(200);
         }
 
         if (numberOfHearts == 2) left_heart.setVisibility(View.INVISIBLE);
@@ -390,10 +400,10 @@ public class MainActivity extends AppCompatActivity {
 
             // Vibrate for 500 milliseconds
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                v.vibrate(VibrationEffect.createOneShot(1100, VibrationEffect.DEFAULT_AMPLITUDE));
             } else {
                 //deprecated in API 26
-                v.vibrate(1000);
+                v.vibrate(1100);
             }
         }
     }

@@ -18,9 +18,23 @@
             android:id="@+id/top_bar_right_side"
             android:layout_width="match_parent"
             android:layout_height="50sp"
-            android:background="#99D9"
             android:layout_weight="1"
-            android:orientation="vertical" />
+            android:visibility="visible"
+            android:text="@string/init_score"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/score_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/init_score"
+                android:textColor="@color/white"
+                android:textSize="40sp"
+                android:layout_marginStart="80dp"
+                android:backgroundTint="@android:color/transparent"
+                />
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/top_bar_left_side"
