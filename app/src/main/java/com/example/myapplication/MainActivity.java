@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
@@ -17,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -28,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     static final int NUMBER_OF_COLUMNS = 3;
     static final int DELAY_FIRST_BLOCK = 300;
     static final int DELAY_SECOND_BLOCK = 500;
+    static final int SCORE_JUMP = 100;
 
     static final int LEFT_LANE = 12;
     static final int CENTER_LANE = 13;
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     protected boolean shouldMoveForward = true;
     protected TextView score_text_view;
     protected int scoreCounter = 0;
+    protected MediaPlayer coin_sound = null;
 
     //Generating block's locations, array for blocks and Timers for each block
     protected int firstBlockLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
@@ -86,6 +90,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        try {
+            Objects.requireNonNull(this.getSupportActionBar()).hide();
+        }
+        catch (NullPointerException ignored) {}
+
         setContentView(R.layout.activity_main);
 
         initParameters();
@@ -270,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
         scoreCounter = 0;
         score_text_view.setText(String.valueOf(scoreCounter));
 
+        coin_sound = MediaPlayer.create(MainActivity.this, R.raw.coin_pickup);
         startFirstBlockTimer();
         startSecondBlockTimer();
     }
@@ -284,7 +295,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (LEFT_LANE <= firstBlockLocation && firstBlockLocation <= RIGHT_LANE) {
             isGameOver();
-            scoreCounter += 100;
+            scoreCounter += SCORE_JUMP;
+            coin_sound.start();
             score_text_view.setText(String.valueOf(scoreCounter));
             blocksArray.get(firstBlockLocation).setVisibility(View.INVISIBLE);
             firstBlockLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
@@ -308,7 +320,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (LEFT_LANE <= secondBlockLocation && secondBlockLocation <= RIGHT_LANE) {
             isGameOver();
-            scoreCounter += 100;
+            scoreCounter += SCORE_JUMP;
+            coin_sound.start();
             score_text_view.setText(String.valueOf(scoreCounter));
             blocksArray.get(secondBlockLocation).setVisibility(View.INVISIBLE);
             secondBlockLocation = new Random().nextInt(NUMBER_OF_COLUMNS);

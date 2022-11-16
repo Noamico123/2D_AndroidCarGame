@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">2D Car Game</string>
     <string name="car_icon">Car</string>
     <string name="heart_icon">Heart</string>
     <string name="block_icon">Block</string>
