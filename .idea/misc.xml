@@ -3,7 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/noami/AndroidStudioProjects/2D_AndroidCarGame/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.219" />
+        <entry key="..\:/Users/noami/AndroidStudioProjects/2D_AndroidCarGame/app/src/main/res/drawable/rounded_corner.xml" value="0.219" />
         <entry key="..\:/Users/noami/AndroidStudioProjects/2D_AndroidCarGame/app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="..\:/Users/noami/AndroidStudioProjects/2D_AndroidCarGame/app/src/main/res/layout/activity_sensor.xml" value="0.303125" />
         <entry key="..\:/Users/noami/AndroidStudioProjects/MyApplication/app/src/main/res/drawable/rounded_corner.xml" value="0.1405" />
         <entry key="..\:/Users/noami/AndroidStudioProjects/MyApplication/app/src/main/res/layout/activity_main.xml" value="0.22" />
       </map>

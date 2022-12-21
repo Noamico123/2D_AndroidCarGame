@@ -4,6 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,18 +27,20 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     // Constants
-    static final int NUMBER_OF_ROWS = 5;
-    static final int NUMBER_OF_COLUMNS = 3;
+    static final int NUMBER_OF_ROWS = 6;
+    static final int NUMBER_OF_COLUMNS = 5;
     static final int DELAY_FIRST_BLOCK = 300;
     static final int DELAY_SECOND_BLOCK = 500;
     static final int SCORE_JUMP = 100;
 
-    static final int LEFT_LANE = 12;
-    static final int CENTER_LANE = 13;
-    static final int RIGHT_LANE = 14;
+    static final int MAX_LEFT_LANE = 25;
+    static final int LEFT_LANE = 26;
+    static final int CENTER_LANE = 27;
+    static final int RIGHT_LANE = 28;
+    static final int MAX_RIGHT_LANE = 29;
 
     // General
     protected boolean shouldMoveForward = true;
@@ -53,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     protected LinearLayout right_car;
     protected LinearLayout center_car;
     protected LinearLayout left_car;
+    protected LinearLayout max_left_car;
+    protected LinearLayout max_right_car;
     protected int carLocation = 13;
 
     //Define heart's ImageView and initial total number of hearts
@@ -67,25 +75,44 @@ public class MainActivity extends AppCompatActivity {
     protected Button start_btn;
 
     //Define block's linear layouts
+    protected LinearLayout zero_first;
+    protected LinearLayout zero_second;
+    protected LinearLayout zero_third;
+    protected LinearLayout zero_fourth;
+    protected LinearLayout zero_fifth;
+
     protected LinearLayout first_first;
     protected LinearLayout first_second;
     protected LinearLayout first_third;
+    protected LinearLayout first_fourth;
+    protected LinearLayout first_fifth;
 
     protected LinearLayout second_first;
     protected LinearLayout second_second;
     protected LinearLayout second_third;
+    protected LinearLayout second_fourth;
+    protected LinearLayout second_fifth;
 
     protected LinearLayout third_first;
     protected LinearLayout third_second;
     protected LinearLayout third_third;
+    protected LinearLayout third_fourth;
+    protected LinearLayout third_fifth;
 
     protected LinearLayout fourth_first;
     protected LinearLayout fourth_second;
     protected LinearLayout fourth_third;
+    protected LinearLayout fourth_fourth;
+    protected LinearLayout fourth_fifth;
 
     protected LinearLayout fifth_first;
     protected LinearLayout fifth_second;
     protected LinearLayout fifth_third;
+    protected LinearLayout fifth_fourth;
+    protected LinearLayout fifth_fifth;
+
+    private SensorManager sensorManager;
+    private Sensor sensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,18 +134,61 @@ public class MainActivity extends AppCompatActivity {
         right_button.setOnClickListener(v -> moveCarToRight());
         left_button.setOnClickListener(v -> moveCarToLeft());
         start_btn.setOnClickListener(v -> startGame());
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        sensorManager.unregisterListener(this);
         stopGame();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
         start_btn.setVisibility(View.VISIBLE);
+
+    }
+
+    /*
+    * ##############################
+    * Init Sensor Manager
+    * ##############################
+    * */
+    @Override
+    public void onAccuracyChanged(Sensor arg0, int arg1) {
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        float x = event.values[0];
+        float y = event.values[1];
+//        if (Math.abs(x) > Math.abs(y)) {
+        if (x < 0) {
+            Log.i("SensorActivity", "You tilt the device right  " + x);
+            moveCarToRight();
+        }
+        if (x > 0) {
+            Log.i("SensorActivity", "You tilt the device left  " + x);
+            moveCarToLeft();
+        }
+//        }
+//        else {
+//            if (y < 0) {
+//                Log.i("SensorActivity", "You tilt the device up");
+//            }
+//            if (y > 0) {
+//                Log.i("SensorActivity", "You tilt the device down");
+//            }
+//        }
+//        if (x > (-2) && x < (2) && y > (-2) && y < (2)) {
+////            moveCarToCenter();
+//            Log.i("SensorActivity", "Not tilt device");
+//        }
     }
 
     /*
@@ -130,7 +200,9 @@ public class MainActivity extends AppCompatActivity {
         Log.i("INIT","car in the center");
         center_car.setVisibility(View.VISIBLE);
         right_car.setVisibility(View.INVISIBLE);
-        left_car.setVisibility(View.INVISIBLE);
+        right_car.setVisibility(View.INVISIBLE);
+        max_left_car.setVisibility(View.INVISIBLE);
+        max_right_car.setVisibility(View.INVISIBLE);
     }
 
     private void initParameters() {
@@ -143,9 +215,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void initCarsLinearLayoutViews() {
         Log.i("INIT","car's possible locations");
-        left_car = (LinearLayout) findViewById(R.id.sixth_row_first_column);
-        center_car = (LinearLayout) findViewById(R.id.sixth_row_second_column);
-        right_car = (LinearLayout) findViewById(R.id.sixth_row_third_column);
+        max_left_car = (LinearLayout) findViewById(R.id.sixth_row_first_column);
+        left_car = (LinearLayout) findViewById(R.id.sixth_row_second_column);
+        center_car = (LinearLayout) findViewById(R.id.sixth_row_third_column);
+        right_car = (LinearLayout) findViewById(R.id.sixth_row_forth_column);
+        max_right_car = (LinearLayout) findViewById(R.id.sixth_row_fifth_column);
     }
 
     private void initHeartsImageView() {
@@ -164,25 +238,41 @@ public class MainActivity extends AppCompatActivity {
 
     private void initBlocksLinearLayoutViews() {
         Log.i("INIT","blocks locations");
+        zero_first = (LinearLayout) findViewById(R.id.zero_row_first_column);
+        zero_second = (LinearLayout) findViewById(R.id.zero_row_second_column);
+        zero_third = (LinearLayout) findViewById(R.id.zero_row_third_column);
+        zero_fourth = (LinearLayout) findViewById(R.id.zero_row_fourth_column);
+        zero_fifth = (LinearLayout) findViewById(R.id.zero_row_fifth_column);
+
         first_first = (LinearLayout) findViewById(R.id.first_row_first_column);
         first_second = (LinearLayout) findViewById(R.id.first_row_second_column);
         first_third = (LinearLayout) findViewById(R.id.first_row_third_column);
+        first_fourth = (LinearLayout) findViewById(R.id.first_row_fourth_column);
+        first_fifth = (LinearLayout) findViewById(R.id.first_row_fifth_column);
 
         second_first = (LinearLayout) findViewById(R.id.second_row_first_column);
         second_second = (LinearLayout) findViewById(R.id.second_row_second_column);
         second_third = (LinearLayout) findViewById(R.id.second_row_third_column);
+        second_fourth = (LinearLayout) findViewById(R.id.second_row_fourth_column);
+        second_fifth = (LinearLayout) findViewById(R.id.second_row_fifth_column);
 
         third_first = (LinearLayout) findViewById(R.id.third_row_first_column);
         third_second = (LinearLayout) findViewById(R.id.third_row_second_column);
         third_third = (LinearLayout) findViewById(R.id.third_row_third_column);
+        third_fourth = (LinearLayout) findViewById(R.id.third_row_fourth_column);
+        third_fifth = (LinearLayout) findViewById(R.id.third_row_fifth_column);
 
         fourth_first = (LinearLayout) findViewById(R.id.fourth_row_first_column);
         fourth_second = (LinearLayout) findViewById(R.id.fourth_row_second_column);
         fourth_third = (LinearLayout) findViewById(R.id.fourth_row_third_column);
+        fourth_fourth = (LinearLayout) findViewById(R.id.fourth_row_fourth_column);
+        fourth_fifth = (LinearLayout) findViewById(R.id.fourth_row_fifth_column);
 
         fifth_first = (LinearLayout) findViewById(R.id.fifth_row_first_column);
         fifth_second = (LinearLayout) findViewById(R.id.fifth_row_second_column);
         fifth_third = (LinearLayout) findViewById(R.id.fifth_row_third_column);
+        fifth_fourth = (LinearLayout) findViewById(R.id.fifth_row_fourth_column);
+        fifth_fifth = (LinearLayout) findViewById(R.id.fifth_row_fifth_column);
     }
 
     private void initBlocksState() {
@@ -203,27 +293,44 @@ public class MainActivity extends AppCompatActivity {
         Log.i("INIT","blocks array list");
         ArrayList<LinearLayout> blocksArray = new ArrayList<>();
 
+        blocksArray.add(zero_first);
+        blocksArray.add(zero_second);
+        blocksArray.add(zero_third);
+        blocksArray.add(zero_fourth);
+        blocksArray.add(zero_fifth);
+
         blocksArray.add(first_first);
         blocksArray.add(first_second);
         blocksArray.add(first_third);
+        blocksArray.add(first_fourth);
+        blocksArray.add(first_fifth);
 
         blocksArray.add(second_first);
         blocksArray.add(second_second);
         blocksArray.add(second_third);
+        blocksArray.add(second_fourth);
+        blocksArray.add(second_fifth);
 
         blocksArray.add(third_first);
         blocksArray.add(third_second);
         blocksArray.add(third_third);
+        blocksArray.add(third_fourth);
+        blocksArray.add(third_fifth);
 
         blocksArray.add(fourth_first);
         blocksArray.add(fourth_second);
         blocksArray.add(fourth_third);
+        blocksArray.add(fourth_fourth);
+        blocksArray.add(fourth_fifth);
 
         blocksArray.add(fifth_first);
         blocksArray.add(fifth_second);
         blocksArray.add(fifth_third);
+        blocksArray.add(fifth_fourth);
+        blocksArray.add(fifth_fifth);
 
-        Log.i("length of blocks array", String.valueOf(blocksArray.size()));
+
+        Log.i("BlocksArrayLength", String.valueOf(blocksArray.size()));
 
         return blocksArray;
     }
@@ -293,7 +400,7 @@ public class MainActivity extends AppCompatActivity {
     private void moveFirstBlock() {
         shouldMoveForward = true;
 
-        if (LEFT_LANE <= firstBlockLocation && firstBlockLocation <= RIGHT_LANE) {
+        if (MAX_LEFT_LANE <= firstBlockLocation && firstBlockLocation <= MAX_RIGHT_LANE) {
             isGameOver();
             scoreCounter += SCORE_JUMP;
             coin_sound.start();
@@ -318,7 +425,7 @@ public class MainActivity extends AppCompatActivity {
     private void moveSecondBlock() {
         shouldMoveForward = true;
 
-        if (LEFT_LANE <= secondBlockLocation && secondBlockLocation <= RIGHT_LANE) {
+        if (MAX_LEFT_LANE <= secondBlockLocation && secondBlockLocation <= MAX_RIGHT_LANE) {
             isGameOver();
             scoreCounter += SCORE_JUMP;
             coin_sound.start();
@@ -351,33 +458,71 @@ public class MainActivity extends AppCompatActivity {
 
     private void moveCarToRight() {
         Log.i("MOVE","right");
-        if (left_car.getVisibility() == View.VISIBLE) {
-            center_car.setVisibility(View.VISIBLE);
-            right_car.setVisibility(View.INVISIBLE);
+        if (max_left_car.getVisibility() == View.VISIBLE) {
+            max_left_car.setVisibility(View.INVISIBLE);
+            left_car.setVisibility(View.VISIBLE);
+            carLocation = LEFT_LANE;
+        }
+
+        else if (left_car.getVisibility() == View.VISIBLE) {
             left_car.setVisibility(View.INVISIBLE);
+            center_car.setVisibility(View.VISIBLE);
             carLocation = CENTER_LANE;
         }
+
         else if (center_car.getVisibility() == View.VISIBLE) {
             center_car.setVisibility(View.INVISIBLE);
             right_car.setVisibility(View.VISIBLE);
-            left_car.setVisibility(View.INVISIBLE);
             carLocation = RIGHT_LANE;
+        }
+
+        else if (right_car.getVisibility() == View.VISIBLE) {
+            right_car.setVisibility(View.INVISIBLE);
+            max_right_car.setVisibility(View.VISIBLE);
+            carLocation = MAX_RIGHT_LANE;
         }
     }
 
     private void moveCarToLeft() {
         Log.i("MOVE","left");
+        if (max_right_car.getVisibility() == View.VISIBLE) {
+            max_right_car.setVisibility(View.INVISIBLE);
+            right_car.setVisibility(View.VISIBLE);
+            carLocation = RIGHT_LANE;
+        }
+
+        else if (right_car.getVisibility() == View.VISIBLE) {
+            right_car.setVisibility(View.INVISIBLE);
+            center_car.setVisibility(View.VISIBLE);
+            carLocation = CENTER_LANE;
+        }
+
+        else if (center_car.getVisibility() == View.VISIBLE) {
+            center_car.setVisibility(View.INVISIBLE);
+            left_car.setVisibility(View.VISIBLE);
+            carLocation = LEFT_LANE;
+        }
+
+        else if (left_car.getVisibility() == View.VISIBLE) {
+            left_car.setVisibility(View.INVISIBLE);
+            max_left_car.setVisibility(View.VISIBLE);
+            carLocation = MAX_LEFT_LANE;
+        }
+    }
+
+    private void moveCarToCenter() {
+        Log.i("MOVE","center");
         if (right_car.getVisibility() == View.VISIBLE) {
             center_car.setVisibility(View.VISIBLE);
             right_car.setVisibility(View.INVISIBLE);
             left_car.setVisibility(View.INVISIBLE);
             carLocation = CENTER_LANE;
         }
-        else if (center_car.getVisibility() == View.VISIBLE) {
-            center_car.setVisibility(View.INVISIBLE);
+        else if (left_car.getVisibility() == View.VISIBLE) {
+            center_car.setVisibility(View.VISIBLE);
             right_car.setVisibility(View.INVISIBLE);
-            left_car.setVisibility(View.VISIBLE);
-            carLocation = LEFT_LANE;
+            left_car.setVisibility(View.INVISIBLE);
+            carLocation = CENTER_LANE;
         }
     }
 
