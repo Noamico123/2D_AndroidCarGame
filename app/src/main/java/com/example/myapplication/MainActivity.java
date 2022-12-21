@@ -33,8 +33,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     static final int NUMBER_OF_ROWS = 6;
     static final int NUMBER_OF_COLUMNS = 5;
     static final int DELAY_FIRST_BLOCK = 300;
-    static final int DELAY_SECOND_BLOCK = 500;
+    static final int DELAY_SECOND_BLOCK = 650;
+    static final int DELAY_FIRST_COIN = 500;
+    static final int DELAY_SECOND_COIN = 850;
     static final int SCORE_JUMP = 100;
+    static final int SCORE_COIN = 50;
 
     static final int MAX_LEFT_LANE = 25;
     static final int LEFT_LANE = 26;
@@ -47,13 +50,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected TextView score_text_view;
     protected int scoreCounter = 0;
     protected MediaPlayer coin_sound = null;
+    protected MediaPlayer crash_sound = null;
 
     //Generating block's locations, array for blocks and Timers for each block
     protected int firstBlockLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
     protected int secondBlockLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
-    protected ArrayList<LinearLayout> blocksArray;
-    Timer secondBlockTimer;
+    protected int firstCoinLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
+    protected int secondCoinLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
+    protected ArrayList<ImageView> blocksArray;
     Timer firstBlockTimer;
+    Timer secondBlockTimer;
+    Timer firstCoinTimer;
+    Timer secondCoinTimer;
 
     //Define car's linear layouts and initial location
     protected LinearLayout right_car;
@@ -61,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected LinearLayout left_car;
     protected LinearLayout max_left_car;
     protected LinearLayout max_right_car;
-    protected int carLocation = 13;
+    protected int carLocation = 27;
 
     //Define heart's ImageView and initial total number of hearts
     protected ImageView right_heart;
@@ -75,41 +83,41 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected Button start_btn;
 
     //Define block's linear layouts
-    protected LinearLayout zero_first;
-    protected LinearLayout zero_second;
-    protected LinearLayout zero_third;
-    protected LinearLayout zero_fourth;
-    protected LinearLayout zero_fifth;
+    protected ImageView zero_first;
+    protected ImageView zero_second;
+    protected ImageView zero_third;
+    protected ImageView zero_fourth;
+    protected ImageView zero_fifth;
 
-    protected LinearLayout first_first;
-    protected LinearLayout first_second;
-    protected LinearLayout first_third;
-    protected LinearLayout first_fourth;
-    protected LinearLayout first_fifth;
+    protected ImageView first_first;
+    protected ImageView first_second;
+    protected ImageView first_third;
+    protected ImageView first_fourth;
+    protected ImageView first_fifth;
 
-    protected LinearLayout second_first;
-    protected LinearLayout second_second;
-    protected LinearLayout second_third;
-    protected LinearLayout second_fourth;
-    protected LinearLayout second_fifth;
+    protected ImageView second_first;
+    protected ImageView second_second;
+    protected ImageView second_third;
+    protected ImageView second_fourth;
+    protected ImageView second_fifth;
 
-    protected LinearLayout third_first;
-    protected LinearLayout third_second;
-    protected LinearLayout third_third;
-    protected LinearLayout third_fourth;
-    protected LinearLayout third_fifth;
+    protected ImageView third_first;
+    protected ImageView third_second;
+    protected ImageView third_third;
+    protected ImageView third_fourth;
+    protected ImageView third_fifth;
 
-    protected LinearLayout fourth_first;
-    protected LinearLayout fourth_second;
-    protected LinearLayout fourth_third;
-    protected LinearLayout fourth_fourth;
-    protected LinearLayout fourth_fifth;
+    protected ImageView fourth_first;
+    protected ImageView fourth_second;
+    protected ImageView fourth_third;
+    protected ImageView fourth_fourth;
+    protected ImageView fourth_fifth;
 
-    protected LinearLayout fifth_first;
-    protected LinearLayout fifth_second;
-    protected LinearLayout fifth_third;
-    protected LinearLayout fifth_fourth;
-    protected LinearLayout fifth_fifth;
+    protected ImageView fifth_first;
+    protected ImageView fifth_second;
+    protected ImageView fifth_third;
+    protected ImageView fifth_fourth;
+    protected ImageView fifth_fifth;
 
     private SensorManager sensorManager;
     private Sensor sensor;
@@ -167,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onSensorChanged(SensorEvent event) {
         float x = event.values[0];
         float y = event.values[1];
-//        if (Math.abs(x) > Math.abs(y)) {
         if (x < 0) {
             Log.i("SensorActivity", "You tilt the device right  " + x);
             moveCarToRight();
@@ -176,19 +183,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Log.i("SensorActivity", "You tilt the device left  " + x);
             moveCarToLeft();
         }
-//        }
-//        else {
-//            if (y < 0) {
-//                Log.i("SensorActivity", "You tilt the device up");
-//            }
-//            if (y > 0) {
-//                Log.i("SensorActivity", "You tilt the device down");
-//            }
-//        }
-//        if (x > (-2) && x < (2) && y > (-2) && y < (2)) {
-////            moveCarToCenter();
-//            Log.i("SensorActivity", "Not tilt device");
-//        }
     }
 
     /*
@@ -198,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      * */
     private void initCarLocation() {
         Log.i("INIT","car in the center");
-        center_car.setVisibility(View.VISIBLE);
+        center_car.setVisibility(View.INVISIBLE);
         right_car.setVisibility(View.INVISIBLE);
         right_car.setVisibility(View.INVISIBLE);
         max_left_car.setVisibility(View.INVISIBLE);
@@ -238,41 +232,41 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void initBlocksLinearLayoutViews() {
         Log.i("INIT","blocks locations");
-        zero_first = (LinearLayout) findViewById(R.id.zero_row_first_column);
-        zero_second = (LinearLayout) findViewById(R.id.zero_row_second_column);
-        zero_third = (LinearLayout) findViewById(R.id.zero_row_third_column);
-        zero_fourth = (LinearLayout) findViewById(R.id.zero_row_fourth_column);
-        zero_fifth = (LinearLayout) findViewById(R.id.zero_row_fifth_column);
+        zero_first = (ImageView) findViewById(R.id.zero_row_first_column_block);
+        zero_second = (ImageView) findViewById(R.id.zero_row_second_column_block);
+        zero_third = (ImageView) findViewById(R.id.zero_row_third_column_block);
+        zero_fourth = (ImageView) findViewById(R.id.zero_row_fourth_column_block);
+        zero_fifth = (ImageView) findViewById(R.id.zero_row_fifth_column_block);
 
-        first_first = (LinearLayout) findViewById(R.id.first_row_first_column);
-        first_second = (LinearLayout) findViewById(R.id.first_row_second_column);
-        first_third = (LinearLayout) findViewById(R.id.first_row_third_column);
-        first_fourth = (LinearLayout) findViewById(R.id.first_row_fourth_column);
-        first_fifth = (LinearLayout) findViewById(R.id.first_row_fifth_column);
+        first_first = (ImageView) findViewById(R.id.first_row_first_column_block);
+        first_second = (ImageView) findViewById(R.id.first_row_second_column_block);
+        first_third = (ImageView) findViewById(R.id.first_row_third_column_block);
+        first_fourth = (ImageView) findViewById(R.id.first_row_fourth_column_block);
+        first_fifth = (ImageView) findViewById(R.id.first_row_fifth_column_block);
 
-        second_first = (LinearLayout) findViewById(R.id.second_row_first_column);
-        second_second = (LinearLayout) findViewById(R.id.second_row_second_column);
-        second_third = (LinearLayout) findViewById(R.id.second_row_third_column);
-        second_fourth = (LinearLayout) findViewById(R.id.second_row_fourth_column);
-        second_fifth = (LinearLayout) findViewById(R.id.second_row_fifth_column);
+        second_first = (ImageView) findViewById(R.id.second_row_first_column_block);
+        second_second = (ImageView) findViewById(R.id.second_row_second_column_block);
+        second_third = (ImageView) findViewById(R.id.second_row_third_column_block);
+        second_fourth = (ImageView) findViewById(R.id.second_row_fourth_column_block);
+        second_fifth = (ImageView) findViewById(R.id.second_row_fifth_column_block);
 
-        third_first = (LinearLayout) findViewById(R.id.third_row_first_column);
-        third_second = (LinearLayout) findViewById(R.id.third_row_second_column);
-        third_third = (LinearLayout) findViewById(R.id.third_row_third_column);
-        third_fourth = (LinearLayout) findViewById(R.id.third_row_fourth_column);
-        third_fifth = (LinearLayout) findViewById(R.id.third_row_fifth_column);
+        third_first = (ImageView) findViewById(R.id.third_row_first_column_block);
+        third_second = (ImageView) findViewById(R.id.third_row_second_column_block);
+        third_third = (ImageView) findViewById(R.id.third_row_third_column_block);
+        third_fourth = (ImageView) findViewById(R.id.third_row_fourth_column_block);
+        third_fifth = (ImageView) findViewById(R.id.third_row_fifth_column_block);
 
-        fourth_first = (LinearLayout) findViewById(R.id.fourth_row_first_column);
-        fourth_second = (LinearLayout) findViewById(R.id.fourth_row_second_column);
-        fourth_third = (LinearLayout) findViewById(R.id.fourth_row_third_column);
-        fourth_fourth = (LinearLayout) findViewById(R.id.fourth_row_fourth_column);
-        fourth_fifth = (LinearLayout) findViewById(R.id.fourth_row_fifth_column);
+        fourth_first = (ImageView) findViewById(R.id.fourth_row_first_column_block);
+        fourth_second = (ImageView) findViewById(R.id.fourth_row_second_column_block);
+        fourth_third = (ImageView) findViewById(R.id.fourth_row_third_column_block);
+        fourth_fourth = (ImageView) findViewById(R.id.fourth_row_fourth_column_block);
+        fourth_fifth = (ImageView) findViewById(R.id.fourth_row_fifth_column_block);
 
-        fifth_first = (LinearLayout) findViewById(R.id.fifth_row_first_column);
-        fifth_second = (LinearLayout) findViewById(R.id.fifth_row_second_column);
-        fifth_third = (LinearLayout) findViewById(R.id.fifth_row_third_column);
-        fifth_fourth = (LinearLayout) findViewById(R.id.fifth_row_fourth_column);
-        fifth_fifth = (LinearLayout) findViewById(R.id.fifth_row_fifth_column);
+        fifth_first = (ImageView) findViewById(R.id.fifth_row_first_column_block);
+        fifth_second = (ImageView) findViewById(R.id.fifth_row_second_column_block);
+        fifth_third = (ImageView) findViewById(R.id.fifth_row_third_column_block);
+        fifth_fourth = (ImageView) findViewById(R.id.fifth_row_fourth_column_block);
+        fifth_fifth = (ImageView) findViewById(R.id.fifth_row_fifth_column_block);
     }
 
     private void initBlocksState() {
@@ -289,9 +283,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         blocksArray.get(secondBlockLocation).setVisibility(View.VISIBLE);
     }
 
-    private ArrayList<LinearLayout> getBlocksArray() {
+    private ArrayList<ImageView> getBlocksArray() {
         Log.i("INIT","blocks array list");
-        ArrayList<LinearLayout> blocksArray = new ArrayList<>();
+        ArrayList<ImageView> blocksArray = new ArrayList<>();
 
         blocksArray.add(zero_first);
         blocksArray.add(zero_second);
@@ -372,12 +366,47 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }, DELAY_SECOND_BLOCK, DELAY_SECOND_BLOCK);
     }
 
+    private void startFirstCoinTimer() {
+        firstCoinTimer = new Timer();
+        firstCoinTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Log.d("Thread", "FirstCoin: " + Thread.currentThread().getName());
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Log.d("Thread", "FirstCoin: " + Thread.currentThread().getName());
+                        updateFirstCoinUI();
+                    }
+                });
+            }
+        }, DELAY_FIRST_COIN, DELAY_FIRST_COIN);
+    }
+
+    private void startSecondCoinTimer() {
+        secondCoinTimer = new Timer();
+        secondCoinTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Log.d("Thread", "FirstCoin: " + Thread.currentThread().getName());
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Log.d("Thread", "FirstCoin: " + Thread.currentThread().getName());
+                        updateSecondCoinUI();
+                    }
+                });
+            }
+        }, DELAY_SECOND_COIN, DELAY_SECOND_COIN);
+    }
+
     private void stopGame() {
         firstBlockTimer.cancel();
         secondBlockTimer.cancel();
+        firstCoinTimer.cancel();
+        secondCoinTimer.cancel();
     }
 
     private void startGame() {
+        center_car.setVisibility(View.VISIBLE);
         left_heart.setVisibility(View.VISIBLE);
         center_heart.setVisibility(View.VISIBLE);
         right_heart.setVisibility(View.VISIBLE);
@@ -388,8 +417,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         score_text_view.setText(String.valueOf(scoreCounter));
 
         coin_sound = MediaPlayer.create(MainActivity.this, R.raw.coin_pickup);
+        crash_sound = MediaPlayer.create(MainActivity.this, R.raw.crash_sound);
         startFirstBlockTimer();
         startSecondBlockTimer();
+        startFirstCoinTimer();
+        startSecondCoinTimer();
     }
 
     /*
@@ -400,13 +432,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void moveFirstBlock() {
         shouldMoveForward = true;
 
+        if (carLocation == firstBlockLocation) {
+            crash_sound.start();
+        }
+
         if (MAX_LEFT_LANE <= firstBlockLocation && firstBlockLocation <= MAX_RIGHT_LANE) {
             isGameOver();
             scoreCounter += SCORE_JUMP;
-            coin_sound.start();
             score_text_view.setText(String.valueOf(scoreCounter));
             blocksArray.get(firstBlockLocation).setVisibility(View.INVISIBLE);
             firstBlockLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
+
+            while (firstBlockLocation == secondBlockLocation ||
+                    firstBlockLocation == firstCoinLocation ||
+                    firstBlockLocation == secondCoinLocation) {
+                firstBlockLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
+            }
+
+            blocksArray.get(firstBlockLocation).setImageResource(R.drawable.block);
             blocksArray.get(firstBlockLocation).setVisibility(View.VISIBLE);
             Log.i("Location" , "firstBlockLocation: " + firstBlockLocation);
             shouldMoveForward = false;
@@ -418,6 +461,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
         if (firstBlockLocation < blocksArray.size()) {
+            blocksArray.get(firstBlockLocation).setImageResource(R.drawable.block);
             blocksArray.get(firstBlockLocation).setVisibility(View.VISIBLE);
         }
     }
@@ -425,13 +469,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void moveSecondBlock() {
         shouldMoveForward = true;
 
+        if (carLocation == secondBlockLocation) {
+            crash_sound.start();
+        }
+
         if (MAX_LEFT_LANE <= secondBlockLocation && secondBlockLocation <= MAX_RIGHT_LANE) {
             isGameOver();
             scoreCounter += SCORE_JUMP;
-            coin_sound.start();
             score_text_view.setText(String.valueOf(scoreCounter));
             blocksArray.get(secondBlockLocation).setVisibility(View.INVISIBLE);
             secondBlockLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
+
+            while (secondBlockLocation == firstBlockLocation ||
+                    secondBlockLocation == firstCoinLocation ||
+                    secondBlockLocation == secondCoinLocation) {
+                secondBlockLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
+            }
+
+            blocksArray.get(secondBlockLocation).setImageResource(R.drawable.block);
             blocksArray.get(secondBlockLocation).setVisibility(View.VISIBLE);
             shouldMoveForward = false;
             Log.i("Location" , "secondBlockLocation: " + secondBlockLocation);
@@ -443,7 +498,76 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
         if (secondBlockLocation < blocksArray.size()) {
+            blocksArray.get(secondBlockLocation).setImageResource(R.drawable.block);
             blocksArray.get(secondBlockLocation).setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void moveFirstCoin() {
+        shouldMoveForward = true;
+
+        if (MAX_LEFT_LANE <= firstCoinLocation && firstCoinLocation <= MAX_RIGHT_LANE) {
+            isGameOver();
+            scoreCounter += SCORE_COIN;
+            coin_sound.start();
+            score_text_view.setText(String.valueOf(scoreCounter));
+            blocksArray.get(firstCoinLocation).setVisibility(View.INVISIBLE);
+            firstCoinLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
+
+            while (firstCoinLocation == secondBlockLocation ||
+                    firstCoinLocation == firstBlockLocation ||
+                    firstCoinLocation == secondCoinLocation) {
+                firstCoinLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
+            }
+
+            blocksArray.get(firstCoinLocation).setImageResource(R.drawable.coin);
+            blocksArray.get(firstCoinLocation).setVisibility(View.VISIBLE);
+            shouldMoveForward = false;
+            Log.i("Location" , "firstCoinLocation: " + firstCoinLocation);
+        }
+
+        if (shouldMoveForward){
+            blocksArray.get(firstCoinLocation).setVisibility(View.INVISIBLE);
+            firstCoinLocation += NUMBER_OF_COLUMNS;
+        }
+
+        if (firstCoinLocation < blocksArray.size()) {
+            blocksArray.get(firstCoinLocation).setImageResource(R.drawable.coin);
+            blocksArray.get(firstCoinLocation).setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void moveSecondCoin() {
+        shouldMoveForward = true;
+
+        if (MAX_LEFT_LANE <= secondCoinLocation && secondCoinLocation <= MAX_RIGHT_LANE) {
+            isGameOver();
+            scoreCounter += SCORE_COIN;
+            coin_sound.start();
+            score_text_view.setText(String.valueOf(scoreCounter));
+            blocksArray.get(secondCoinLocation).setVisibility(View.INVISIBLE);
+            secondCoinLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
+
+            while (secondCoinLocation == secondBlockLocation ||
+                    secondCoinLocation == firstBlockLocation ||
+                    secondCoinLocation == firstCoinLocation) {
+                secondCoinLocation = new Random().nextInt(NUMBER_OF_COLUMNS);
+            }
+
+            blocksArray.get(secondCoinLocation).setImageResource(R.drawable.coin);
+            blocksArray.get(secondCoinLocation).setVisibility(View.VISIBLE);
+            shouldMoveForward = false;
+            Log.i("Location" , "secondCoinLocation: " + secondCoinLocation);
+        }
+
+        if (shouldMoveForward){
+            blocksArray.get(secondCoinLocation).setVisibility(View.INVISIBLE);
+            secondCoinLocation += NUMBER_OF_COLUMNS;
+        }
+
+        if (secondCoinLocation < blocksArray.size()) {
+            blocksArray.get(secondCoinLocation).setImageResource(R.drawable.coin);
+            blocksArray.get(secondCoinLocation).setVisibility(View.VISIBLE);
         }
     }
 
@@ -510,22 +634,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-    private void moveCarToCenter() {
-        Log.i("MOVE","center");
-        if (right_car.getVisibility() == View.VISIBLE) {
-            center_car.setVisibility(View.VISIBLE);
-            right_car.setVisibility(View.INVISIBLE);
-            left_car.setVisibility(View.INVISIBLE);
-            carLocation = CENTER_LANE;
-        }
-        else if (left_car.getVisibility() == View.VISIBLE) {
-            center_car.setVisibility(View.VISIBLE);
-            right_car.setVisibility(View.INVISIBLE);
-            left_car.setVisibility(View.INVISIBLE);
-            carLocation = CENTER_LANE;
-        }
-    }
-
     private void updateFirstBlockUI() {
         moveFirstBlock();
     }
@@ -533,6 +641,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void updateSecondBlockUI() {
         moveSecondBlock();
     }
+
+    private void updateFirstCoinUI() {
+        moveFirstCoin();
+    }
+
+    private void updateSecondCoinUI() {
+        moveSecondCoin();
+    }
+
 
     @SuppressLint("SetTextI18n")
     private void handleHeartsAndFinishGame() {
