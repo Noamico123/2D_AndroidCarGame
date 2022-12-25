@@ -1,10 +1,52 @@
 <resources>
-    <string name="app_name">2D Car Game</string>
+    <string name="app_name">2D Race</string>
+    <string name="app_title">The Race</string>
+    <!--Main strings-->
+    <string name="settings_str">Settings</string>
+    <string name="start_str">START</string>
+    <string name="save_upper_str">SAVE</string>
+    <string name="save_lower_str">Save</string>
+    <string name="back_lower_str">Back</string>
+    <string name="lanes_str">Number Of Lanes: </string>
+    <string name="vibrations_str">Vibrations: </string>
+    <string name="tilt_str">Tilt: </string>
+    <string name="sound_str">Sound: </string>
+    <!--Table strings-->
+    <string name="place_str">Place: </string>
+    <string name="name_str">Name: </string>
+    <string name="score_str">Your Score: </string>
+    <string name="first_str">1</string>
+    <string name="second_str">2</string>
+    <string name="third_str">3</string>
+    <string name="fourth_str">4</string>
+    <string name="fifth_str">5</string>
+    <string name="sixth_str">6</string>
+    <string name="seventh_str">7</string>
+    <string name="eighth_str">8</string>
+    <string name="nine_str">9</string>
+    <string name="ten_str">10</string>
+    <string name="location_str">Your Location: </string>
+    <!--Scores strings-->
+    <string name="scores_title_str">Leaderboard</string>
+    <!--Game strings-->
     <string name="car_icon">Car</string>
     <string name="heart_icon">Heart</string>
     <string name="block_icon">Block</string>
     <string name="start_game">Start</string>
-    <string name="try_again">"Try Again?"</string>
-    <string name="init_score">"0"</string>
+    <string name="try_again">Try Again?</string>
+    <string name="init_score">0</string>
+    <string name="game_over_string">Game Over</string>
+    <string name="exit_str">For Sure? </string>
+    <string name="play_again_str">Play Again</string>
+    <string name="enter_your_name_str">Please Enter Your Name:</string>
+    <string name="new_best_score_str">You are In The 1st Place!</string>
 
+    <string name="menu_str">Menu</string>
+    <string name="back_str">Back</string>
+    <string-array name="numOfLanes_array">
+        <item>5</item>
+        <item>3</item>
+    </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
